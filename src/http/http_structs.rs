@@ -1,4 +1,6 @@
-use std::{net::{TcpStream, SocketAddr}, io::{BufReader, BufRead, Read, Error}};
+use core::fmt;
+use std::{io::{BufRead, BufReader, Error, Read}, net::{SocketAddr, TcpStream}, sync::Arc};
+
 /// HttpHeaders stores the HttpMethod, the Path and the Protocol used
 #[derive(Debug, Clone)]
 pub struct HttpHeaders {
@@ -227,7 +229,7 @@ impl HttpRequest {
                 };
                 let mut buffer = vec![0; length];
                 match buf_reader.read_exact(&mut buffer) {
-                    Ok(_) => _data = Some(HttpData::new(buffer)),
+                    Ok(_) => _data = Some(HttpData::Bytes(buffer)),
                     Err(err) => {
                         #[cfg(feature = "log")]
                         log::trace!("Error reading request body");
@@ -559,25 +561,23 @@ pub enum HttpStatus {
     NetworkAuthenticationRequired = 511,
   }  
 
-/// Represents binary data present in the body of a http request
-#[derive(Debug, Clone)]
-pub struct HttpData {
-    /// The data represented as a vector of bytes.
-    pub data: Vec<u8>
+/// represents the Responses data either as stream or Bytes
+#[derive(Clone)]
+pub enum HttpData {
+    Bytes(Vec<u8>),
+    Stream(Arc<(Box<dyn Read>, usize)>)
+}
+
+impl fmt::Debug for HttpData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Bytes(arg0) => f.debug_tuple("Byte").field(arg0).finish(),
+            Self::Stream(arg0) => f.debug_tuple("Stream").field(&arg0.1).finish(),
+        }
+    }
 }
 
 impl HttpData {
-    /// Creates new instance of HttpData from a vec of bytes
-    /// Example:
-    /// ```rust
-    /// use http_serv::http::http_structs::HttpData;
-    /// 
-    /// let http_data = HttpData::new(vec![b't', b'e', b's', b't']);
-    /// ```
-    pub fn new(data: Vec<u8>) -> Self {
-        Self { data }
-    }
-
     /// Fetches the length of the stored binary and sets the Content-Length header accordingly
     /// Example:
     /// ```rust
@@ -587,6 +587,10 @@ impl HttpData {
     /// let header = http_data.to_header();
     /// ```
     pub fn to_header(&self) -> String {
-        format!("Content-Length: {}", self.data.len())
+        let len = match self {
+            HttpData::Bytes(vec) => vec.len(),
+            HttpData::Stream(stream) => stream.1,
+        };
+        format!("Content-Length: {}", len)
     }
 }
