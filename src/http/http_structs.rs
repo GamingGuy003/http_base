@@ -1,5 +1,5 @@
 use core::fmt;
-use std::{io::{BufRead, BufReader, Error, Read}, net::{SocketAddr, TcpStream}, sync::Arc};
+use std::{io::{BufRead, BufReader, Error, Read}, net::{SocketAddr, TcpStream}, rc::Rc};
 
 /// HttpHeaders stores the HttpMethod, the Path and the Protocol used
 #[derive(Debug, Clone)]
@@ -565,7 +565,7 @@ pub enum HttpStatus {
 #[derive(Clone)]
 pub enum HttpData {
     Bytes(Vec<u8>),
-    Stream(Arc<(Box<dyn Read>, usize)>)
+    Stream(Rc<(Box<dyn Read>, usize)>)
 }
 
 impl fmt::Debug for HttpData {
