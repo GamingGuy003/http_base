@@ -564,7 +564,9 @@ pub enum HttpStatus {
 /// represents the Responses data either as stream or Bytes
 #[derive(Clone)]
 pub enum HttpData {
+    /// The data to send as bytes
     Bytes(Vec<u8>),
+    /// The data to send as a stream, with the second value being the data length
     Stream(Rc<(Box<dyn Read>, usize)>)
 }
 
