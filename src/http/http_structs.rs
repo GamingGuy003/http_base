@@ -1,5 +1,5 @@
 use core::fmt;
-use std::{io::{BufRead, BufReader, Error, Read}, net::{SocketAddr, TcpStream}, rc::Rc};
+use std::{io::{BufRead, BufReader, Error, Read}, net::{SocketAddr, TcpStream}};
 
 /// HttpHeaders stores the HttpMethod, the Path and the Protocol used
 #[derive(Debug, Clone)]
@@ -72,7 +72,7 @@ impl HttpHeaders {
 }
 
 /// HttpRequest stores the requests headers, request body, route and query parameters 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct HttpRequest {
     /// Client IP
     pub client_ip: SocketAddr,
@@ -562,12 +562,11 @@ pub enum HttpStatus {
   }  
 
 /// represents the Responses data either as stream or Bytes
-#[derive(Clone)]
 pub enum HttpData {
     /// The data to send as bytes
     Bytes(Vec<u8>),
     /// The data to send as a stream, with the second value being the data length
-    Stream((Rc<dyn Read>, usize))
+    Stream((Box<dyn Read>, usize))
 }
 
 impl fmt::Debug for HttpData {
