@@ -16,7 +16,7 @@ impl HttpHeaders {
     /// Creates new instance of HttpHeaders
     /// Example:
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpHeaders, HttpMethod};
+    /// use http_base::http::http_structs::{HttpHeaders, HttpMethod};
     /// 
     /// let headers = HttpHeaders::new(HttpMethod::GET, String::from("/"), String::from("1.1"));
     /// ```
@@ -27,7 +27,7 @@ impl HttpHeaders {
     /// Creates new instance of HttpHeaders from String
     /// Example:
     /// ```rust
-    /// use http_serv::http::http_structs::HttpHeaders;
+    /// use http_base::http::http_structs::HttpHeaders;
     /// 
     /// let headers_raw = String::from("GET / HTTP/1.1");
     /// let headers_parsed = HttpHeaders::from_line(headers_raw).unwrap();
@@ -92,7 +92,9 @@ impl HttpRequest {
     /// Creates new instance of HttpRequest
     /// Example:
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpHeaders, HttpRequest};
+    /// use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+    /// 
+    /// use http_base::http::http_structs::{HttpHeaders, HttpRequest};
     /// 
     /// let headers = HttpHeaders::from_line(String::from("GET / HTTP/1.1")).unwrap();
     /// let request = HttpRequest::new(SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080), headers, Vec::new(), None, None, None);
@@ -103,10 +105,12 @@ impl HttpRequest {
 
     /// Tries to fetch extra headers from request by key
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpHeaders, HttpRequest};
+    /// use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+    /// 
+    /// use http_base::http::http_structs::{HttpHeaders, HttpRequest};
     /// 
     /// let headers = HttpHeaders::from_line(String::from("GET / HTTP/1.1")).unwrap();
-    /// let request = HttpRequest::new(headers, vec![(String::from("Content-Length"), String::from("5"))], None, None, None);
+    /// let request = HttpRequest::new(SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080), headers, vec![(String::from("Content-Length"), String::from("5"))], None, None, None);
     /// let content_length = request.get_extra_header(String::from("Content-Length")).unwrap();
     /// ```
     pub fn get_extra_header(&self, header_name: String) -> Option<String> {
@@ -120,10 +124,12 @@ impl HttpRequest {
 
     /// Tries to fetch route parameter from called route
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpHeaders, HttpRequest};
+    /// use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+    /// 
+    /// use http_base::http::http_structs::{HttpHeaders, HttpRequest};
     /// 
     /// let headers = HttpHeaders::from_line(String::from("GET /test/value HTTP/1.1")).unwrap();
-    /// let request = HttpRequest::new(headers, Vec::new(), None, Some(vec![(String::from(":var"), String::from("value"))]), None);
+    /// let request = HttpRequest::new(SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080), headers, Vec::new(), None, Some(vec![(String::from(":var"), String::from("value"))]), None);
     /// let var_value = request.get_route_param(String::from(":var")).unwrap();
     /// ```
     pub fn get_route_param(&self, param_name: String) -> Option<String> {
@@ -139,10 +145,12 @@ impl HttpRequest {
 
     /// Tries to fetch query parameter from called route
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpHeaders, HttpRequest};
+    /// use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+    /// 
+    /// use http_base::http::http_structs::{HttpHeaders, HttpRequest};
     /// 
     /// let headers = HttpHeaders::from_line(String::from("GET /test?var=value HTTP/1.1")).unwrap();
-    /// let request = HttpRequest::new(headers, Vec::new(), None, None, Some(vec![(String::from(":var"), String::from("value"))]));
+    /// let request = HttpRequest::new(SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080), headers, Vec::new(), None, None, Some(vec![(String::from(":var"), String::from("value"))]));
     /// let var_value = request.get_query_param(String::from(":var")).unwrap();
     /// ```
     pub fn get_query_param(&self, param_name: String) -> Option<String> {
@@ -247,12 +255,14 @@ impl HttpRequest {
     /// Creates query params from string
     /// Example:
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpHeaders, HttpRequest};
+    /// use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+    /// 
+    /// use http_base::http::http_structs::{HttpHeaders, HttpRequest};
     /// 
     /// let query_string = String::from("/route?param1=val1&param2=val2");
     /// let split = query_string.split_once('?').unwrap().1;
     /// let headers = HttpHeaders::from_line(String::from("GET /test?var=value HTTP/1.1")).unwrap();
-    /// let mut request = HttpRequest::new(headers, Vec::new(), None, None, None);
+    /// let mut request = HttpRequest::new(SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080), headers, Vec::new(), None, None, None);
     /// request.query_params = Some(request.query_params_from_string(query_string));
     /// ```
     pub fn query_params_from_string(&mut self, params: String) -> Vec<(String, String)>{
@@ -294,7 +304,7 @@ impl HttpResponse {
     /// Creates new instance of HttpResponse
     /// Example:
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpResponse, HttpStatus};
+    /// use http_base::http::http_structs::{HttpResponse, HttpStatus};
     /// 
     /// let response = HttpResponse::new(String::from("1.1"), HttpStatus::Ok, None, None);
     /// ```
@@ -305,7 +315,7 @@ impl HttpResponse {
     /// Tries to fetch extra header by key
     /// Example:
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpResponse, HttpStatus};
+    /// use http_base::http::http_structs::{HttpResponse, HttpStatus};
     /// 
     /// let response = HttpResponse::new(String::from("1.1"), HttpStatus::Ok, Some(vec![(String::from("Content-Length"), String::from("5"))]), None);
     /// let content_length = response.get_extra_header(String::from("Content-Length")).unwrap();
@@ -323,7 +333,7 @@ impl HttpResponse {
 
     /// Creates a vec of lines which contain the http header, and extra headers. Autodetects eventual binary data present and sets content-length accordingly
     /// ```rust
-    /// use http_serv::http::http_structs::{HttpResponse, HttpStatus};
+    /// use http_base::http::http_structs::{HttpResponse, HttpStatus};
     /// 
     /// let response = HttpResponse::new(String::from("1.1"), HttpStatus::Ok, Some(vec![(String::from("Content-Length"), String::from("5"))]), None);
     /// let headers = response.to_headers();
@@ -430,7 +440,7 @@ pub enum HttpMethod {
 /// Represents http status codes with their keywords
 #[derive(Debug, num_enum::TryFromPrimitive)]
 #[repr(u64)]
-// Status codes + description from https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+/// Status codes + description from https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 /// Represents the status of an HTTP response.
 pub enum HttpStatus {
     /// Continue processing request.
@@ -582,9 +592,9 @@ impl HttpData {
     /// Fetches the length of the stored binary and sets the Content-Length header accordingly
     /// Example:
     /// ```rust
-    /// use http_serv::http::http_structs::HttpData;
+    /// use http_base::http::http_structs::HttpData;
     /// 
-    /// let http_data = HttpData::new(vec![b't', b'e', b's', b't']);
+    /// let http_data = HttpData::Bytes(vec![b't', b'e', b's', b't']);
     /// let header = http_data.to_header();
     /// ```
     pub fn to_header(&self) -> String {
