@@ -576,7 +576,7 @@ pub enum HttpData {
     /// The data to send as bytes
     Bytes(Vec<u8>),
     /// The data to send as a stream, with the second value being the data length
-    Stream((Box<dyn Read>, usize))
+    Stream((Box<dyn Read + Send>, usize))
 }
 
 impl fmt::Debug for HttpData {
